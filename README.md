@@ -1,3 +1,6 @@
+[![Build Status](https://secure.travis-ci.org/Meettya/async-resolve.png)](http://travis-ci.org/Meettya/async-resolve)
+
+
 # async-resolve
 
 This module an async and configurable `requre.resolve()` implementation.
@@ -64,7 +67,7 @@ resolver_obj.addExtensions('.jade');
 All options may be inspected (for testing and debug):
 
 ```javascript
-resolver_obj.getState(); # =>
+resolver_obj.getState();
 /*
 {
   log: true,
