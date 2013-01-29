@@ -1,0 +1,39 @@
+{
+  "name": "async-resolve",
+  "version": "0.0.6",
+  "description": "An asynchronous and configurable implementation of require.resolve(), like node-resolve or enhanced-resolve.",
+  "main": "index.js",
+  "repository": "",
+  "keywords": [
+    "resolve",
+    "require",
+    "node",
+    "module",
+    "filepath",
+    "search"
+  ],
+  "author": "Dmitrii Karpich <meettya@gmail.com>",
+  "devDependencies": {
+    "mocha": "~1.8.1",
+    "chai": "~1.4.2",
+    "coffee-script": "~1.4.0"
+  },
+  "dependencies": {
+    "lodash": "~1.0.0-rc.3",
+    "async": "~0.1.22"
+  },
+  "scripts": {
+    "test": "cake test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Meettya/async-resolve.git"
+  },
+  "bugs": {
+      "url": "https://github.com/Meettya/async-resolve/issues"
+  },
+  "engines": {
+    "node": ">=0.6.0"
+  },
+  "license": "MIT"
+}
