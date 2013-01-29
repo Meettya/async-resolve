@@ -99,3 +99,9 @@ resolver_obj.getState();
 $ cake test
 ```
 
+## License
+
+Copyright (c) 2013 Dmitrii Karpich
+
+MIT (https://raw.github.com/Meettya/async-resolve/master/LICENSE)
+
