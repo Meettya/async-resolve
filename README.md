@@ -40,6 +40,8 @@ options = {
   extensions: ['.js', '.coffee', '.eco'],
   // default : false - make searching verbose for debug and tests
   log: true
+  // default : 'node_modules' - its 'node_modules' directory names, may be changed
+  modules : 'other_modules'
 };
 resolver_obj = new Resolver(options);
 ```
@@ -71,6 +73,7 @@ resolver_obj.getState();
 /*
 {
   log: true,
+  modules : 'other_modules',
   extensions: [ '.js', '.coffee', '.eco', '.jade' ],
   dir_load_steps: [
    'package.json',

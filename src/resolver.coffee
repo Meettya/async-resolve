@@ -87,6 +87,8 @@ class Resolver
 
     @_event_bus_ = new EventEmitter()
 
+    @_node_modules_dirname_ = @_options_.modules ? 'node_modules'
+
     # TODO add ensure and test func. both
     @_known_ext_ = @_options_.extensions ? ['.js', '.json', '.node']
     @_dir_load_steps_ = ['package.json'].concat @_buildDirLoadSteps @_known_ext_
@@ -129,6 +131,7 @@ class Resolver
     log : @_do_logging_
     extensions  : @_known_ext_
     dir_load_steps : @_dir_load_steps_
+    modules :  @_node_modules_dirname_
 
   ###
   This module prepare EventBus for results
@@ -184,8 +187,8 @@ class Resolver
   _buildNodeModulesPathes : (from) ->
     parts = from.split path.sep
 
-    all_paths = for tip, idx in parts when tip isnt 'node_modules'
-      path.join path.sep, parts.slice(0, idx + 1)..., 'node_modules'
+    all_paths = for tip, idx in parts when tip isnt @_node_modules_dirname_
+      path.join path.sep, parts.slice(0, idx + 1)..., @_node_modules_dirname_
 
     all_paths.reverse()
 
