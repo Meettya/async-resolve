@@ -1,6 +1,6 @@
 {
   "name": "async-resolve",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "An asynchronous and configurable implementation of require.resolve(), like node-resolve or enhanced-resolve.",
   "main": "index.js",
   "repository": "",
