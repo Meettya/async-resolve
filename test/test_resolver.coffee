@@ -30,13 +30,13 @@ examples = [
   },
   {   #1
     path_name : 'summator'
-    parent : path.join fixtureRoot, 'node_modules'
-    file_name : path.join fixtureRoot, 'node_modules/summator/lib/summator.coffee'
+    parent : path.join fixtureRoot, 'other_modules'
+    file_name : path.join fixtureRoot, 'other_modules/summator/lib/summator.coffee'
   },
   {   #2
     path_name : './summator'
-    parent : path.join fixtureRoot, 'node_modules'
-    file_name : path.join fixtureRoot, 'node_modules/summator/lib/summator.coffee'  
+    parent : path.join fixtureRoot, 'other_modules'
+    file_name : path.join fixtureRoot, 'other_modules/summator/lib/summator.coffee'  
   },
   {   #3
     path_name : './'
@@ -75,6 +75,7 @@ describe 'Resolver:', ->
 
   options =
     extensions : [ '.js', '.coffee', '.eco' ]
+    modules : 'other_modules'
     #log : on
 
   beforeEach ->
@@ -89,6 +90,7 @@ describe 'Resolver:', ->
       state = 
         log: off
         extensions: [ '.js', '.coffee', '.eco', '.jade' ]
+        modules : 'other_modules'
         dir_load_steps: [
          'package.json',
          'index.js',
@@ -168,6 +170,9 @@ describe 'Resolver:', ->
       pf_obj.resolveAbsolutePath examples[3].path_name, examples[3].parent, res_fn
 
     it 'should find npm module in upper folder', (done) ->
+
+      local_pf_obj = new Resolver()
+
       res_fn = (err, file_name) ->
         expect(err).to.be.null
         #console.log 'err ', err
@@ -175,7 +180,7 @@ describe 'Resolver:', ->
         file_name.should.to.be.eql examples[4].file_name
         done()
 
-      pf_obj.resolveAbsolutePath examples[4].path_name, examples[4].parent, res_fn
+      local_pf_obj.resolveAbsolutePath examples[4].path_name, examples[4].parent, res_fn
 
     it 'should return core modules if it required', (done) ->
       res_fn = (err, file_name) ->
@@ -254,12 +259,12 @@ describe 'Resolver:', ->
 
     describe 'pass \'bar\' test', ->
 
-      it 'should resolve |foo| in node_modules dir', (done) ->
+      it 'should resolve |foo| in other_modules dir', (done) ->
         res_fn = (err, file_name) ->
           expect(err).to.be.null
           #console.log 'err ', err
           #console.log 'file_name ', file_name
-          res = path.join fixturesResolver, 'bar', 'node_modules', 'foo', 'index.js'
+          res = path.join fixturesResolver, 'bar', 'other_modules', 'foo', 'index.js'
           file_name.should.to.be.eql res
           done()
 
@@ -280,7 +285,7 @@ describe 'Resolver:', ->
        
     describe 'pass \'biz\' test', ->
 
-      base_dir = path.join fixturesResolver, 'biz', 'node_modules'
+      base_dir = path.join fixturesResolver, 'biz', 'other_modules'
 
       it 'should resolve |./grux|', (done) ->
         res_fn = (err, file_name) ->
@@ -317,7 +322,7 @@ describe 'Resolver:', ->
 
     describe 'pass \'normalize\' test', ->
 
-      base_dir = path.join fixturesResolver, 'biz', 'node_modules'
+      base_dir = path.join fixturesResolver, 'biz', 'other_modules'
 
       it 'should resolve |../grux|', (done) ->
         res_fn = (err, file_name) ->

@@ -1,3 +1,6 @@
+[![Build Status](https://secure.travis-ci.org/Meettya/async-resolve.png)](http://travis-ci.org/Meettya/async-resolve)
+
+
 # async-resolve
 
 This module an async and configurable `requre.resolve()` implementation.
@@ -37,6 +40,8 @@ options = {
   extensions: ['.js', '.coffee', '.eco'],
   // default : false - make searching verbose for debug and tests
   log: true
+  // default : 'node_modules' - its 'node_modules' directory names, may be changed
+  modules : 'other_modules'
 };
 resolver_obj = new Resolver(options);
 ```
@@ -64,10 +69,11 @@ resolver_obj.addExtensions('.jade');
 All options may be inspected (for testing and debug):
 
 ```javascript
-resolver_obj.getState(); # =>
+resolver_obj.getState();
 /*
 {
   log: true,
+  modules : 'other_modules',
   extensions: [ '.js', '.coffee', '.eco', '.jade' ],
   dir_load_steps: [
    'package.json',
@@ -92,4 +98,10 @@ resolver_obj.getState(); # =>
 ```bash
 $ cake test
 ```
+
+## License
+
+Copyright (c) 2013 Dmitrii Karpich
+
+MIT (https://raw.github.com/Meettya/async-resolve/master/LICENSE)
 

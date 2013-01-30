@@ -14,9 +14,6 @@ path    = require 'path'
 _       = require 'lodash'
 async   = require 'async'
 
-# to reduce async logic 
-{ EventEmitter } = require 'events'
-
 class Resolver
 
   # move it out to config file, may be - think about it
@@ -85,7 +82,7 @@ class Resolver
     # for debugging 
     @_do_logging_ = if @_options_.log? and @_options_.log is on and console?.log? then yes else no
 
-    @_event_bus_ = new EventEmitter()
+    @_node_modules_dirname_ = @_options_.modules ? 'node_modules'
 
     # TODO add ensure and test func. both
     @_known_ext_ = @_options_.extensions ? ['.js', '.json', '.node']
@@ -103,17 +100,42 @@ class Resolver
   resolveAbsolutePath : (path_name, basedir, main_cb) ->
  
     # at first add our event listeners
-    @_prepareEventsListeners path_name, basedir, main_cb
+    res_cb = @_buldResultCallback path_name, basedir, main_cb
 
     # than go to async hell
     # decide on first symbol must be safe (not sure about Win, but WTF? )
     switch path_name.charAt 0
       when '.', path.sep 
         @_debug 'This is file or directory', path_name
-        @_processFileOrDirectory path_name, basedir
+        @_processFileOrDirectory path_name, basedir, res_cb
       else 
         @_debug 'This is module', path_name
-        @_processModule path_name, basedir
+        @_processModule path_name, basedir, res_cb
+
+  ###
+  This internal method create res_cb - result callback
+  its wrapper form main_cb with some checker, bulded as event emmiter substitutor
+  to fix bug - events are global and shared to all async execution, 
+  and, yes, its case some numbers returns
+  ###
+  _buldResultCallback : (path_name, basedir, main_cb) =>
+
+    (event_name, in_data) =>
+      switch event_name
+        when MODULE_FOUND
+          @_debug 'MODULE_FOUND FROM EVENT'
+          main_cb null, in_data
+        when MODULE_NOT_FOUND
+          @_debug 'MODULE_NOT_FOUND FROM EVENT'
+          err = new Error "Cannot find module |#{path_name}| at basedir |#{basedir}|"
+          err.code = 'MODULE_NOT_FOUND'
+          main_cb err
+        when ERROR
+          main_cb new Error in_data
+        else
+          @_debug "WTF!!?? unknow event #{event_name}"
+          main_cb new Error "can`t do |#{event_name}|"
+
 
   ###
   This method will used to add extensions, keep based untouched
@@ -129,24 +151,7 @@ class Resolver
     log : @_do_logging_
     extensions  : @_known_ext_
     dir_load_steps : @_dir_load_steps_
-
-  ###
-  This module prepare EventBus for results
-  ###
-  _prepareEventsListeners : (path_name, basedir, main_cb) ->
-
-    @_event_bus_.on MODULE_FOUND, (file_name) => 
-      @_debug 'MODULE_FOUND FROM EVENT'
-      main_cb null, file_name
-
-    @_event_bus_.on MODULE_NOT_FOUND, =>
-      @_debug 'MODULE_NOT_FOUND FROM EVENT'
-      err = new Error "Cannot find module |#{path_name}| at basedir |#{basedir}|"
-      err.code = 'MODULE_NOT_FOUND'
-      main_cb err  
-
-    @_event_bus_.on ERROR, (message) =>
-      main_cb new Error message  
+    modules :  @_node_modules_dirname_
 
   ###
   This internal method create directory resolution patterns in correct steps
@@ -164,10 +169,10 @@ class Resolver
   ###
   This method process module
   ###
-  _processModule : (path_name, basedir) ->
+  _processModule : (path_name, basedir, res_cb) ->
     # at first make sure it is not core modules
     if CORE_MODULES[path_name]
-      return @_event_bus_.emit MODULE_FOUND, path_name
+      return res_cb MODULE_FOUND, path_name
 
     # or search in any 'node_modules' dirs
     detector = (val, cb) ->
@@ -175,7 +180,7 @@ class Resolver
       fs.exists test_path, (res) -> cb res
 
     async.detect @_buildNodeModulesPathes(basedir), detector, (detected_path) =>
-      @_processFileOrDirectory path_name, detected_path
+      @_processFileOrDirectory path_name, detected_path, res_cb
 
   ###
   Build all possible node_modules dirs for selected dir
@@ -184,8 +189,8 @@ class Resolver
   _buildNodeModulesPathes : (from) ->
     parts = from.split path.sep
 
-    all_paths = for tip, idx in parts when tip isnt 'node_modules'
-      path.join path.sep, parts.slice(0, idx + 1)..., 'node_modules'
+    all_paths = for tip, idx in parts when tip isnt @_node_modules_dirname_
+      path.join path.sep, parts.slice(0, idx + 1)..., @_node_modules_dirname_
 
     all_paths.reverse()
 
@@ -201,51 +206,51 @@ class Resolver
   ###
   This method process file or directory
   ###
-  _processFileOrDirectory : (path_name, basedir) ->
+  _processFileOrDirectory : (path_name, basedir, res_cb) ->
     path_name = path.resolve basedir, path_name
     
     path_prefix = path.dirname path_name
     path_suffix = path.basename path_name
 
     # find out our paths to find out something
-    @_processPath path_prefix, path_suffix, (filtered) =>
+    @_processPath path_prefix, path_suffix, res_cb, (filtered) =>
       @_debug '_processFileOrDirectory filtered', filtered
 
       switch filtered.length
         when 0 
           @_debug 'Not found'
-          @_event_bus_.emit MODULE_NOT_FOUND
+          res_cb MODULE_NOT_FOUND
         when 1  
           @_debug 'find one'
-          @_processGodsend path.resolve path_prefix, filtered[0]
+          @_processGodsend path.resolve(path_prefix, filtered[0]), res_cb
         else
           @_debug 'find some files, resolve by extension order', filtered
           first_filtered = @_resolveFileByExtentionOrder filtered
-          @_processGodsend path.resolve path_prefix, first_filtered
+          @_processGodsend path.resolve(path_prefix, first_filtered), res_cb
         
   ###
   This method look closer to our godsend and find out what is it really
   ###
-  _processGodsend : (thing_path) ->
+  _processGodsend : (thing_path, res_cb) ->
     fs.stat thing_path, (err, stat_obj) =>
-      return @_event_bus_.emit ERROR, err if err
+      return res_cb ERROR, err if err
 
       if stat_obj.isFile()
         @_debug 'WAY!!! its file!!!'
-        @_event_bus_.emit MODULE_FOUND, thing_path
+        res_cb MODULE_FOUND, thing_path
       else if stat_obj.isDirectory()
         @_debug 'HM, big directory, not bad :)'
-        @_processDirectory thing_path
+        @_processDirectory thing_path, res_cb
       else 
         @_debug 'WTF?? Cant process it, sorry'
-        @_event_bus_.emit MODULE_NOT_FOUND
+        res_cb MODULE_NOT_FOUND
 
   ###
   This method process directory as node.js resolve
   ###
-  _processDirectory : (dir_path) ->
+  _processDirectory : (dir_path, res_cb) ->
     fs.readdir dir_path, (err, dir) =>
-      return @_event_bus_.emit ERROR, err if err
+      return res_cb ERROR, err if err
 
       # yes, steps first, to save order and work with first element
       filtered = @_multiGrep @_dir_load_steps_, dir
@@ -254,52 +259,52 @@ class Resolver
       switch file_name = filtered[0]
         when undefined
           @_debug 'Nothing finded, not a module'
-          @_event_bus_.emit MODULE_NOT_FOUND
+          res_cb MODULE_NOT_FOUND
         when 'package.json'
           @_debug 'this is |package.json|'
-          @_tryProcessJSON dir_path, file_name, filtered[1..]      
+          @_tryProcessJSON dir_path, file_name, filtered[1..], res_cb    
         else
           @_debug 'just return file', path.resolve dir_path, file_name
-          @_event_bus_.emit MODULE_FOUND, path.resolve dir_path, file_name   
+          res_cb MODULE_FOUND, path.resolve dir_path, file_name   
 
   ###
   This method load and parse JSON for 'main' part
   while package.json may be invalid or main is missing 
   - some boilerplate code needed 
   ###
-  _tryProcessJSON : (dir_path, file_name, other_file_names) ->
+  _tryProcessJSON : (dir_path, file_name, other_file_names, res_cb) ->
 
     json_path = path.resolve dir_path, file_name
 
     fs.readFile json_path, (err, data) =>
-      return @_event_bus_.emit ERROR, err if err
+      return res_cb ERROR, err if err
 
       json = null
       try 
         json = JSON.parse data
       catch err
-        return @_event_bus_.emit ERROR, err
+        return res_cb ERROR, err
     
       if main_path = json?.main
         # now resolve main from json
-        @_processFileOrDirectory main_path, path.dirname json_path
+        @_processFileOrDirectory main_path, path.dirname(json_path), res_cb
       else if other_file_names.length
         @_debug 'package.json missed |main|, return ', path.resolve dir_path, other_file_names[0]
-        @_event_bus_.emit MODULE_FOUND, path.resolve dir_path, other_file_names[0]        
+        res_cb MODULE_FOUND, path.resolve dir_path, other_file_names[0]        
       else
         @_debug 'package.json missed |main| and no index.* founded'
-        @_event_bus_.emit ERROR, "broken module: no main in |#{json_path}|, nor index.* files in |#{dir_path}|"
+        res_cb ERROR, "broken module: no main in |#{json_path}|, nor index.* files in |#{dir_path}|"
 
   ###
   This method process path to find something in path
   ###
   # TODO! cache it and, yes, cache invalidation logic too :(
-  _processPath : (path_prefix, path_suffix, cb) ->
+  _processPath : (path_prefix, path_suffix, res_cb, cb) ->
     @_debug '_processPath', path_prefix, path_suffix
     patterns = _.map @_known_ext_, (ext) -> "#{path_suffix}#{ext}"
 
     fs.readdir path_prefix, (err, dir) =>
-      return @_event_bus_.emit ERROR, err if err
+      return res_cb ERROR, err if err
 
       cb @_multiGrep dir, [path_suffix].concat patterns
 
