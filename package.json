@@ -1,6 +1,6 @@
 {
   "name": "async-resolve",
-  "version": "0.0.9",
+  "version": "0.1.1",
   "description": "An asynchronous and configurable implementation of require.resolve(), like node-resolve or enhanced-resolve.",
   "main": "index.js",
   "repository": "",
@@ -33,7 +33,7 @@
       "url": "https://github.com/Meettya/async-resolve/issues"
   },
   "engines": {
-    "node": ">=0.6.0"
+    "node": ">=0.8.0"
   },
   "license": "MIT"
 }
