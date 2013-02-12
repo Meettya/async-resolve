@@ -1,3 +1,13 @@
+## 0.1.3 / 2013-02-13 01:00 AM
+
+  - Remove async dependencies
+  - Add bench folder
+
+## 0.1.1 / 2013-02-01 02:30 AM
+
+  - Fix node engine to >=0.8.0
+  - Re-place some function for readability
+
 ## 0.0.9 / 2013-01-30 04:50 PM
 
   - Change EventsEmmiter to plain cb, to fix bug if async-resolver was started multiply times in async wrapper. In short - its 'thread'-safe now.

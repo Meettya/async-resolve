@@ -12,7 +12,6 @@ Not drop-in, but mostly worked with some changes
 fs      = require 'fs'
 path    = require 'path'
 _       = require 'lodash'
-async   = require 'async'
 
 class Resolver
 
@@ -113,6 +112,22 @@ class Resolver
         @_processModule path_name, basedir, res_cb
 
   ###
+  This method will used to add extensions, keep based untouched
+  ###
+  addExtensions : (extensions...) ->
+    @_known_ext_ = @_known_ext_.concat extensions
+    @_dir_load_steps_ = @_dir_load_steps_.concat @_buildDirLoadSteps extensions
+
+  ###
+  This method get internal state, may be used in tests and debug
+  ###
+  getState : ->
+    log : @_do_logging_
+    extensions  : @_known_ext_
+    dir_load_steps : @_dir_load_steps_
+    modules :  @_node_modules_dirname_
+
+  ###
   This internal method create res_cb - result callback
   its wrapper form main_cb with some checker, bulded as event emmiter substitutor
   to fix bug - events are global and shared to all async execution, 
@@ -135,24 +150,7 @@ class Resolver
         else
           @_debug "WTF!!?? unknow event #{event_name}"
           main_cb new Error "can`t do |#{event_name}|"
-
-
-  ###
-  This method will used to add extensions, keep based untouched
-  ###
-  addExtensions : (extensions...) ->
-    @_known_ext_ = @_known_ext_.concat extensions
-    @_dir_load_steps_ = @_dir_load_steps_.concat @_buildDirLoadSteps extensions
-
-  ###
-  This method get internal state, may be used in tests and debug
-  ###
-  getState : ->
-    log : @_do_logging_
-    extensions  : @_known_ext_
-    dir_load_steps : @_dir_load_steps_
-    modules :  @_node_modules_dirname_
-
+          
   ###
   This internal method create directory resolution patterns in correct steps
   ###
@@ -179,8 +177,17 @@ class Resolver
       test_path = path.resolve val, path_name
       fs.exists test_path, (res) -> cb res
 
-    async.detect @_buildNodeModulesPathes(basedir), detector, (detected_path) =>
-      @_processFileOrDirectory path_name, detected_path, res_cb
+    detect_series = (int_res_cb, try_path, other_paths...) =>
+      unless try_path
+        return int_res_cb MODULE_NOT_FOUND, path_name
+
+      detector try_path, (is_exist) =>
+        if is_exist
+          @_processFileOrDirectory path_name, try_path, int_res_cb
+        else
+          detect_series int_res_cb, other_paths...
+
+    detect_series res_cb, @_buildNodeModulesPathes(basedir)...
 
   ###
   Build all possible node_modules dirs for selected dir
