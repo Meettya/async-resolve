@@ -12,7 +12,6 @@ Not drop-in, but mostly worked with some changes
 fs      = require 'fs'
 path    = require 'path'
 _       = require 'lodash'
-async   = require 'async'
 
 class Resolver
 
@@ -178,8 +177,17 @@ class Resolver
       test_path = path.resolve val, path_name
       fs.exists test_path, (res) -> cb res
 
-    async.detect @_buildNodeModulesPathes(basedir), detector, (detected_path) =>
-      @_processFileOrDirectory path_name, detected_path, res_cb
+    detect_series = (int_res_cb, try_path, other_paths...) =>
+      unless try_path
+        return int_res_cb MODULE_NOT_FOUND, path_name
+
+      detector try_path, (is_exist) =>
+        if is_exist
+          @_processFileOrDirectory path_name, try_path, int_res_cb
+        else
+          detect_series int_res_cb, other_paths...
+
+    detect_series res_cb, @_buildNodeModulesPathes(basedir)...
 
   ###
   Build all possible node_modules dirs for selected dir

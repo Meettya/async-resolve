@@ -1,3 +1,8 @@
+## 0.1.3 / 2013-02-13 01:00 AM
+
+  - Remove async dependencies
+  - Add bench folder
+
 ## 0.1.1 / 2013-02-01 02:30 AM
 
   - Fix node engine to >=0.8.0
