@@ -1,4 +1,6 @@
-  var Enh_Resolver, Enh_Resolver_rec, My_Resolver, compare, count, my_resolver, my_resolver_rec, options;
+  var Enh_Resolver, My_Resolver, compare, count, my_resolver, options, _;
+
+  _ = require('lodash');
 
   My_Resolver = require("../lib/resolver");
 
@@ -11,34 +13,30 @@
 
   Enh_Resolver = require('enhanced-resolve');
 
-  count = 50;
-
-  my_resolver_rec = function(i, done) {
-    if ((i += 1) > count) {
-      return done();
-    } else {
-      return my_resolver.resolve('coffee-script', __dirname, function(err, filename) {
-        return my_resolver_rec(i, done);
-      });
-    }
-  };
-
-  Enh_Resolver_rec = function(i, done) {
-    if ((i += 1) > count) {
-      return done();
-    } else {
-      return Enh_Resolver(__dirname, 'coffee-script', function(err, filename) {
-        return Enh_Resolver_rec(i, done);
-      });
-    }
-  };
+  count = 150;
 
   compare = {
     My_Resolver: function(done) {
-      return my_resolver_rec(0, done);
+      var i, test_done, _i;
+      test_done = _.after(count, done());
+      for (i = _i = 0; _i < count; i = _i += 1) {
+        my_resolver.resolve('coffee-script', __dirname, function(err, filename) {
+          return test_done;
+        });
+        null;
+      }
+      return null;
     },
     Enh_Resolver: function(done) {
-      return Enh_Resolver_rec(0, done);
+      var i, test_done, _i;
+      test_done = _.after(count, done());
+      for (i = _i = 0; _i < count; i = _i += 1) {
+        Enh_Resolver(__dirname, 'coffee-script', function(err, filename) {
+          return test_done;
+        });
+        null;
+      }
+      return null;
     }
   };
 

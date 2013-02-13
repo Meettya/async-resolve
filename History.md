@@ -1,3 +1,7 @@
+## 0.1.5 / 2013-02-14 03:30 AM
+
+  - Add cache with 'async-cache', now we are faster than 'enhanced-resolve' by ~60%
+
 ## 0.1.3 / 2013-02-13 01:00 AM
 
   - Remove async dependencies

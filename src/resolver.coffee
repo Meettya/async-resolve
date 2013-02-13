@@ -13,6 +13,8 @@ fs      = require 'fs'
 path    = require 'path'
 _       = require 'lodash'
 
+AsyncCache = require 'async-cache'
+
 class Resolver
 
   # move it out to config file, may be - think about it
@@ -87,6 +89,12 @@ class Resolver
     @_known_ext_ = @_options_.extensions ? ['.js', '.json', '.node']
     @_dir_load_steps_ = ['package.json'].concat @_buildDirLoadSteps @_known_ext_
 
+    @_fs_ = 
+      stat      : @_buildCachedFunction 'fs.stat'
+      readdir   : @_buildCachedFunction 'fs.readdir'
+      exists    : @_buildCachedFunction 'fs.exists'
+      readFile  : @_buildCachedFunction 'fs.readFile'
+
   ###
   Alias to resolveAbsolutePath()
   ###
@@ -150,6 +158,22 @@ class Resolver
         else
           @_debug "WTF!!?? unknow event #{event_name}"
           main_cb new Error "can`t do |#{event_name}|"
+
+  ###
+  This method buld cached function
+  ###
+  _buildCachedFunction : (function_name) ->
+    max = if function_name is 'fs.readFile' then 100 else 1000
+    maxAge = 1000 * 5
+    load = switch function_name
+      when 'fs.stat'      then (key, cb) -> fs.stat     key, cb
+      when 'fs.readdir'   then (key, cb) -> fs.readdir  key, cb
+      when 'fs.exists'    then (key, cb) -> fs.exists   key, cb
+      when 'fs.readFile'  then (key, cb) -> fs.readFile key, cb
+      else
+        throw Error "WTF!!?? unknow cached function name #{function_name}"
+    
+    new AsyncCache {max, maxAge, load}
           
   ###
   This internal method create directory resolution patterns in correct steps
@@ -173,9 +197,9 @@ class Resolver
       return res_cb MODULE_FOUND, path_name
 
     # or search in any 'node_modules' dirs
-    detector = (val, cb) ->
+    detector = (val, cb) =>
       test_path = path.resolve val, path_name
-      fs.exists test_path, (res) -> cb res
+      @_fs_.exists.get test_path, (res) -> cb res
 
     detect_series = (int_res_cb, try_path, other_paths...) =>
       unless try_path
@@ -239,7 +263,7 @@ class Resolver
   This method look closer to our godsend and find out what is it really
   ###
   _processGodsend : (thing_path, res_cb) ->
-    fs.stat thing_path, (err, stat_obj) =>
+    @_fs_.stat.get thing_path, (err, stat_obj) =>
       return res_cb ERROR, err if err
 
       if stat_obj.isFile()
@@ -256,7 +280,7 @@ class Resolver
   This method process directory as node.js resolve
   ###
   _processDirectory : (dir_path, res_cb) ->
-    fs.readdir dir_path, (err, dir) =>
+    @_fs_.readdir.get dir_path, (err, dir) =>
       return res_cb ERROR, err if err
 
       # yes, steps first, to save order and work with first element
@@ -283,7 +307,7 @@ class Resolver
 
     json_path = path.resolve dir_path, file_name
 
-    fs.readFile json_path, (err, data) =>
+    @_fs_.readFile.get json_path, (err, data) =>
       return res_cb ERROR, err if err
 
       json = null
@@ -310,7 +334,7 @@ class Resolver
     @_debug '_processPath', path_prefix, path_suffix
     patterns = _.map @_known_ext_, (ext) -> "#{path_suffix}#{ext}"
 
-    fs.readdir path_prefix, (err, dir) =>
+    @_fs_.readdir.get path_prefix, (err, dir) =>
       return res_cb ERROR, err if err
 
       cb @_multiGrep dir, [path_suffix].concat patterns

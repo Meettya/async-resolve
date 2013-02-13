@@ -2,6 +2,8 @@
 run many times so that we can abstract out the overhead of promise creation.
 ###
 
+_ = require 'lodash'
+
 My_Resolver = require "../lib/resolver"
 
 options =
@@ -12,29 +14,25 @@ my_resolver = new My_Resolver options
 
 Enh_Resolver = require 'enhanced-resolve'
 
-count = 50
-
-my_resolver_rec = (i, done) ->
-  if ( i += 1) > count
-    done()
-  else
-    my_resolver.resolve 'coffee-script', __dirname, (err, filename) ->
-      my_resolver_rec i, done
-
-Enh_Resolver_rec = (i, done) ->
-  if ( i += 1) > count
-    done()
-  else
-    Enh_Resolver __dirname, 'coffee-script', (err, filename) ->
-      Enh_Resolver_rec i, done
+count = 100
 
 compare = 
 
   My_Resolver : (done) ->
-    my_resolver_rec 0, done
+    test_done = _.after count, done()
+    for i in [0...count] by 1
+      my_resolver.resolve 'coffee-script', __dirname, (err, filename) ->
+        test_done
+      null
+    null
 
   Enh_Resolver : (done) ->
-    Enh_Resolver_rec 0, done
+    test_done = _.after count, done()
+    for i in [0...count] by 1
+      Enh_Resolver __dirname, 'coffee-script', (err, filename) ->
+        test_done
+      null
+    null
 
 
 module.exports = {compare, countPerLap : count }
