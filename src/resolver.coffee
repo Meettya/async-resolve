@@ -179,7 +179,7 @@ class Resolver
 
     detect_series = (int_res_cb, try_path, other_paths...) =>
       unless try_path
-        return int_res_cb MODULE_NOT_FOUND, path_name
+        return int_res_cb MODULE_NOT_FOUND
 
       detector try_path, (is_exist) =>
         if is_exist
