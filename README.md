@@ -103,7 +103,7 @@ $ cake test
 
 In short `async-resolve` 2.4 times as fast as `enhanced-resolve`.
 
-My benchmark [results](https://raw.github.com/Meettya/async-resolve/master/Benchmarking.md).
+My benchmark [results](https://github.com/Meettya/async-resolve/blob/master/Benchmarking.md).
 
 Build you own in 2 steps:
 
