@@ -3,7 +3,7 @@
 
 # async-resolve
 
-This module an async and configurable `requre.resolve()` implementation.
+This module a faster async and configurable `requre.resolve()` implementation.
 
 ## Installation
 
@@ -98,6 +98,17 @@ resolver_obj.getState();
 ```bash
 $ cake test
 ```
+
+## Benchmark
+
+In short `async-resolve` 2.4 times as fast as `enhanced-resolve`.
+
+My benchmark [results](https://raw.github.com/Meettya/async-resolve/master/Benchmarking.md).
+
+Build you own in 2 steps:
+
+1. do  `$ npm install node-bench -g`
+2. run `$ node-bench ./bench/async-resolve_vs_other.js` from root module folder
 
 ## License
 

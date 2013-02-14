@@ -1,3 +1,8 @@
+## 0.1.7 / 2013-02-14 05:00 AM
+
+  - Add Benchmarks
+  - Update Readme
+
 ## 0.1.5 / 2013-02-14 03:30 AM
 
   - Add cache with 'async-cache', now we are faster than 'enhanced-resolve' by ~60%
