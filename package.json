@@ -19,7 +19,10 @@
   "devDependencies": {
     "mocha": "~1.8.1",
     "chai": "~1.4.2",
-    "coffee-script": "~1.4.0"
+    "coffee-script": "~1.4.0",
+    "enhanced-resolve": "~0.5.3",
+    "localizer": "~0.2.2",
+    "resolve": "~0.2.3"
   },
   "dependencies": {
     "lodash": "~1.0.0-rc.3",
