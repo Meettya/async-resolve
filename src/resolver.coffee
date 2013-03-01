@@ -136,6 +136,12 @@ class Resolver
     modules :  @_node_modules_dirname_
 
   ###
+  This method chech is filename is core module
+  ###
+  isCoreModule : (filename) ->
+    CORE_MODULES[filename]?
+
+  ###
   This internal method create res_cb - result callback
   its wrapper form main_cb with some checker, bulded as event emmiter substitutor
   to fix bug - events are global and shared to all async execution, 
@@ -193,7 +199,7 @@ class Resolver
   ###
   _processModule : (path_name, basedir, res_cb) ->
     # at first make sure it is not core modules
-    if CORE_MODULES[path_name]
+    if @isCoreModule path_name
       return res_cb MODULE_FOUND, path_name
 
     # or search in any 'node_modules' dirs

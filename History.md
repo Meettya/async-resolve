@@ -1,3 +1,7 @@
+## 0.1.9 / 2013-03-01 03:00 PM
+
+  - Add isCoreModule() method as fast loockup
+
 ## 0.1.7 / 2013-02-14 05:00 AM
 
   - Add Benchmarks
