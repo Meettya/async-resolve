@@ -86,6 +86,15 @@ resolver_obj.getState();
 */
 ```
 
+### isCoreModule()
+
+Return `true` if filename is node.js core module or `false` otherwise.
+
+```javascript
+resolver_obj.isCoreModule('util'); // -> true
+```
+This method use internal module names table for fast lookup, not IO.
+
 ## Similar modules
 
 * [resolve](https://github.com/substack/node-resolve)
