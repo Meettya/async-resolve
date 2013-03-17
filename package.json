@@ -1,6 +1,6 @@
 {
   "name": "async-resolve",
-  "version": "0.1.9",
+  "version": "0.2.1",
   "description": "An asynchronous and configurable implementation of require.resolve(), like node-resolve or enhanced-resolve.",
   "main": "index.js",
   "repository": {
@@ -17,16 +17,16 @@
   ],
   "author": "Dmitrii Karpich <meettya@gmail.com>",
   "devDependencies": {
-    "mocha": "~1.8.1",
-    "chai": "~1.4.2",
-    "coffee-script": "~1.4.0",
+    "mocha": "*",
+    "chai": "*",
+    "coffee-script": "*",
     "enhanced-resolve": "~0.5.3",
     "localizer": "~0.2.2",
     "resolve": "~0.2.3",
     "async": "~0.2.5"
   },
   "dependencies": {
-    "lodash": "~1.0.0-rc.3",
+    "lodash": "*",
     "async-cache": "~0.1.1"
   },
   "scripts": {
