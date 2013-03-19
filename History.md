@@ -1,3 +1,8 @@
+## 0.2.3 / 2013-03-19 05:10 PM
+
+  - Add Gemnasium bage
+  - Fix dependencies
+
 ## 0.2.1 / 2013-03-17 09:50 PM
 
   - Fix package.json

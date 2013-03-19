@@ -169,6 +169,7 @@ class Resolver
   This method buld cached function
   ###
   _buildCachedFunction : (function_name) ->
+    # yap, magic here
     max = if function_name is 'fs.readFile' then 100 else 1000
     maxAge = 1000 * 5
     load = switch function_name
