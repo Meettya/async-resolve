@@ -45,6 +45,14 @@ compare =
       null
     null
 
+  'node-resolve *async*' : (done) ->
+    test_done = _.after count, done()
+    for i in [0...count] by 1
+      node_resolve 'coffee-script', { basedir: __dirname }, (err, filename) ->
+        test_done
+      null
+    null
+
   'node-resolve *sync*' : (done) ->
     for i in [0...count] by 1
       node_resolve.sync 'coffee-script'

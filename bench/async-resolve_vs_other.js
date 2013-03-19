@@ -24,6 +24,7 @@
   compare = {
     'async-resolve': function(done) {
       var i, test_done, _i;
+
       test_done = _.after(count, done());
       for (i = _i = 0; _i < count; i = _i += 1) {
         async_resolver.resolve('coffee-script', __dirname, function(err, filename) {
@@ -35,6 +36,7 @@
     },
     'enhanced-resolve': function(done) {
       var i, test_done, _i;
+
       test_done = _.after(count, done());
       for (i = _i = 0; _i < count; i = _i += 1) {
         enhanced_resolver(__dirname, 'coffee-script', function(err, filename) {
@@ -46,6 +48,7 @@
     },
     'localizer': function(done) {
       var i, test_done, _i;
+
       test_done = _.after(count, done());
       for (i = _i = 0; _i < count; i = _i += 1) {
         localizer_resolver(__dirname, 'coffee-script', function(err, filename) {
@@ -55,8 +58,23 @@
       }
       return null;
     },
+    'node-resolve *async*': function(done) {
+      var i, test_done, _i;
+
+      test_done = _.after(count, done());
+      for (i = _i = 0; _i < count; i = _i += 1) {
+        node_resolve('coffee-script', {
+          basedir: __dirname
+        }, function(err, filename) {
+          return test_done;
+        });
+        null;
+      }
+      return null;
+    },
     'node-resolve *sync*': function(done) {
       var i, _i;
+
       for (i = _i = 0; _i < count; i = _i += 1) {
         node_resolve.sync('coffee-script');
         null;
