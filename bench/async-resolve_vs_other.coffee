@@ -4,6 +4,10 @@ run many times so that we can abstract out the overhead of promise creation.
 
 _ = require 'lodash'
 
+assert = require 'assert'
+expected = '/Users/meettya/github/async-resolve/node_modules/coffee-script/lib/coffee-script/coffee-script.js'
+
+
 AsyncResolve = require "../lib/resolver"
 options =
   extensions : [ '.js', '.coffee', '.eco' ]
@@ -25,6 +29,7 @@ compare =
     test_done = _.after count, done()
     for i in [0...count] by 1
       async_resolver.resolve 'coffee-script', __dirname, (err, filename) ->
+        assert.strictEqual filename, expected, 'filename not resolved'
         test_done
       null
     null

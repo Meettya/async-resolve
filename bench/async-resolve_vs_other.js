@@ -1,6 +1,10 @@
-  var AsyncResolve, async_resolver, compare, count, enhanced_resolver, localizer, localizer_resolver, node_resolve, options, _;
+  var AsyncResolve, assert, async_resolver, compare, count, enhanced_resolver, expected, localizer, localizer_resolver, node_resolve, options, _;
 
   _ = require('lodash');
+
+  assert = require('assert');
+
+  expected = '/Users/meettya/github/async-resolve/node_modules/coffee-script/lib/coffee-script/coffee-script.js';
 
   AsyncResolve = require("../lib/resolver");
 
@@ -66,6 +70,8 @@
         node_resolve('coffee-script', {
           basedir: __dirname
         }, function(err, filename) {
+          // this fail
+          // assert.strictEqual(filename, expected, 'filename not resolved');
           return test_done;
         });
         null;
@@ -76,7 +82,9 @@
       var i, _i;
 
       for (i = _i = 0; _i < count; i = _i += 1) {
-        node_resolve.sync('coffee-script');
+        filename = node_resolve.sync('coffee-script');
+        // this will pass
+        // assert.strictEqual(filename, expected, 'filename not resolved');        
         null;
       }
       return done();
