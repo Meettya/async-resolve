@@ -1,3 +1,17 @@
+## 0.2.3 / 2013-03-19 05:10 PM
+
+  - Add Gemnasium bage
+  - Fix dependencies
+
+## 0.2.1 / 2013-03-17 09:50 PM
+
+  - Fix package.json
+  - Re-build lib with latest Coffee compiler
+
+## 0.1.9 / 2013-03-01 03:00 PM
+
+  - Add isCoreModule() method as fast lookup
+
 ## 0.1.7 / 2013-02-14 05:00 AM
 
   - Add Benchmarks

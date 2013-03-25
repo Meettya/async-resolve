@@ -1,9 +1,11 @@
 [![Build Status](https://secure.travis-ci.org/Meettya/async-resolve.png)](http://travis-ci.org/Meettya/async-resolve)
+[![Dependency Status](https://gemnasium.com/Meettya/async-resolve.png)](https://gemnasium.com/Meettya/async-resolve)
+
 
 
 # async-resolve
 
-This module a faster async and configurable `requre.resolve()` implementation.
+This module a fastest async and configurable `requre.resolve()` implementation.
 
 ## Installation
 
@@ -86,6 +88,15 @@ resolver_obj.getState();
 */
 ```
 
+### isCoreModule()
+
+Return `true` if filename is node.js core module or `false` otherwise.
+
+```javascript
+resolver_obj.isCoreModule('util'); // -> true
+```
+This method use internal module names table for fast lookup, not IO.
+
 ## Similar modules
 
 * [resolve](https://github.com/substack/node-resolve)
@@ -105,10 +116,11 @@ In short `async-resolve` 2.4 times as fast as `enhanced-resolve`.
 
 My benchmark [results](https://github.com/Meettya/async-resolve/blob/master/Benchmarking.md).
 
-Build you own in 2 steps:
+Build you own in 3 steps:
 
 1. do  `$ npm install node-bench -g`
-2. run `$ node-bench ./bench/async-resolve_vs_other.js` from root module folder
+2. do  `$ npm install -d` at root module folder
+3. run `$ node-bench ./bench/async-resolve_vs_other.js` from root module folder
 
 ## License
 

@@ -6,6 +6,8 @@ Its so wrong, but its OK for test
 # resolve require from [window] or by require() 
 _ = @_ ? require 'lodash'
 
+async = require 'async'
+
 path  = require 'path'
 fs    = require 'fs'
 
@@ -62,6 +64,11 @@ examples = [
     path_name : './sub_dir'
     parent : fixtures
     file_name : path.join fixtures, 'sub_dir/multiplier.coffee'
+  },
+  {   #8
+    path_name : 'summator'
+    parent : path.join fixtureRoot, 'other_modules', 'devider', 'other_modules', 'substitutor'
+    file_name : path.join fixtureRoot, 'other_modules/summator/lib/summator.coffee'
   },
 ]
 
@@ -222,6 +229,28 @@ describe 'Resolver:', ->
 
       pf_obj.resolveAbsolutePath './nonexistent', examples[0].parent, res_fn
 
+    it 'should "bubbling up" search to upper "node_modules" directories', (done) ->
+      res_fn = (err, file_name) ->
+        expect(err).to.be.null
+        #console.log 'err ', err
+        #console.log 'file_name ', file_name
+        
+        file_name.should.to.be.eql examples[8].file_name
+        done()
+
+      #console.log examples[8].path_name, examples[8].parent
+      pf_obj.resolveAbsolutePath examples[8].path_name, examples[8].parent, res_fn
+ 
+
+  describe 'isCoreModule()', ->
+
+    it 'should return |true| if module is core module', ->
+      pf_obj.isCoreModule('path').should.to.be.true
+      pf_obj.isCoreModule('util').should.to.be.true
+
+    it 'should return |false| if module is NOT core module', ->
+      pf_obj.isCoreModule('paths').should.to.be.false
+      pf_obj.isCoreModule(examples[0].path_name).should.to.be.false
 
   describe 'resolveAbsolutePath() must pass some \'resolve\' (\'node-resolve\') tests:', ->
 
@@ -409,6 +438,63 @@ describe 'Resolver:', ->
         local_pf_obj.resolveAbsolutePath './mug', fixturesResolver, res_fn 
 
     # test for other path not ported - I don't need this behavior right now :)
+
+  describe 'Stress test suite:', ->
+
+    describe 'in case of many different async resolve', ->
+
+      it 'should allways return some results', (done) ->
+
+        fixtureTwoChildren = path.join fixtureRoot, './two_children'
+
+        test_suite = [
+            {
+              name : './two_children'
+              dir  : fixtureRoot
+            },
+            {
+              name : './index'
+              dir  : fixtureTwoChildren
+            },
+            {
+              name : './substractor'
+              dir  : fixtureTwoChildren
+            },
+            {
+              name : './summator'
+              dir  : fixtureTwoChildren
+            }, 
+            {
+              name : './power'
+              dir  : fixtureTwoChildren
+            }
+        ]
+
+        dep_tree = [
+          [test_suite[0]]
+          [test_suite[1]]
+          [test_suite[2], test_suite[3]]
+          [test_suite[4]]
+          [test_suite[4]]
+
+        ]
+
+        inner_iteratot_fn = (item, inner_iter_cb) ->
+          pf_obj.resolve item.name, item.dir, inner_iter_cb
+
+        out_iterator_fn = (items, out_iter_cb) ->
+          async.map items, inner_iteratot_fn, out_iter_cb
+
+        mapper = (n, par_cb) -> async.map _.shuffle(dep_tree), out_iterator_fn, par_cb
+
+        async.times 20, mapper, (err, results) ->
+          expect(err).to.be.null
+        
+          for item in results
+            (_.flatten item, true).should.to.have.length 6
+
+          done()
+          
 
 
 
