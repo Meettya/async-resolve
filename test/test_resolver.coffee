@@ -65,6 +65,11 @@ examples = [
     parent : fixtures
     file_name : path.join fixtures, 'sub_dir/multiplier.coffee'
   },
+  {   #8
+    path_name : 'summator'
+    parent : path.join fixtureRoot, 'other_modules', 'devider', 'other_modules', 'substitutor'
+    file_name : path.join fixtureRoot, 'other_modules/summator/lib/summator.coffee'
+  },
 ]
 
 #TODO! also need web_modules substitution
@@ -223,6 +228,19 @@ describe 'Resolver:', ->
         done()
 
       pf_obj.resolveAbsolutePath './nonexistent', examples[0].parent, res_fn
+
+    it 'should "bubbling up" search to upper "node_modules" directories', (done) ->
+      res_fn = (err, file_name) ->
+        expect(err).to.be.null
+        #console.log 'err ', err
+        #console.log 'file_name ', file_name
+        
+        file_name.should.to.be.eql examples[8].file_name
+        done()
+
+      #console.log examples[8].path_name, examples[8].parent
+      pf_obj.resolveAbsolutePath examples[8].path_name, examples[8].parent, res_fn
+ 
 
   describe 'isCoreModule()', ->
 
