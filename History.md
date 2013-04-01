@@ -1,5 +1,11 @@
 ## 0.2.5 / 2013-03-25 09:10 PM
 
+  - Re-build with new dependencies versions
+  - Add 0.10 to Travis test
+  - Delete obsolete index.js
+
+## 0.2.5 / 2013-03-25 09:10 PM
+
   - Add 'bubling up search logic' test, as node do it.
 
 ## 0.2.3 / 2013-03-19 05:10 PM

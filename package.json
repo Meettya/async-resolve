@@ -1,8 +1,8 @@
 {
   "name": "async-resolve",
-  "version": "0.2.5",
+  "version": "0.2.7",
   "description": "An asynchronous and configurable implementation of require.resolve(), like node-resolve or enhanced-resolve.",
-  "main": "index.js",
+  "main": "./lib/resolver",
   "repository": {
     "type": "git",
     "url": "https://github.com/Meettya/async-resolve.git"
@@ -23,11 +23,11 @@
     "enhanced-resolve": "*",
     "localizer": "*",
     "resolve": "*",
-    "async": "~0.2.5"
+    "async": "*"
   },
   "dependencies": {
     "lodash": "*",
-    "async-cache": "~0.1.1"
+    "async-cache": "*"
   },
   "scripts": {
     "test": "cake test"
