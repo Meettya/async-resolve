@@ -1,0 +1,20 @@
+{
+  "name": "async-resolve",
+  "version": "0.2.9",
+  "dependencies": {
+    "async-cache": {
+      "version": "0.1.5",
+      "from": "async-cache@*",
+      "dependencies": {
+        "lru-cache": {
+          "version": "2.3.1",
+          "from": "lru-cache@~2.3"
+        }
+      }
+    },
+    "lodash": {
+      "version": "2.4.1",
+      "from": "lodash@*"
+    }
+  }
+}
