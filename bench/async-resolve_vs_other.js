@@ -29,10 +29,10 @@
     'async-resolve': function(done) {
       var i, test_done, _i;
 
-      test_done = _.after(count, done());
+      test_done = _.after(count, done);
       for (i = _i = 0; _i < count; i = _i += 1) {
         async_resolver.resolve('coffee-script', __dirname, function(err, filename) {
-          return test_done;
+          return test_done();
         });
         null;
       }
@@ -41,10 +41,10 @@
     'enhanced-resolve': function(done) {
       var i, test_done, _i;
 
-      test_done = _.after(count, done());
+      test_done = _.after(count, done);
       for (i = _i = 0; _i < count; i = _i += 1) {
         enhanced_resolver(__dirname, 'coffee-script', function(err, filename) {
-          return test_done;
+          return test_done();
         });
         null;
       }
@@ -53,10 +53,10 @@
     'localizer': function(done) {
       var i, test_done, _i;
 
-      test_done = _.after(count, done());
+      test_done = _.after(count, done);
       for (i = _i = 0; _i < count; i = _i += 1) {
         localizer_resolver(__dirname, 'coffee-script', function(err, filename) {
-          return test_done;
+          return test_done();
         });
         null;
       }
@@ -65,14 +65,14 @@
     'node-resolve *async*': function(done) {
       var i, test_done, _i;
 
-      test_done = _.after(count, done());
+      test_done = _.after(count, done);
       for (i = _i = 0; _i < count; i = _i += 1) {
         node_resolve('coffee-script', {
           basedir: __dirname
         }, function(err, filename) {
           // this fail
           // assert.strictEqual(filename, expected, 'filename not resolved');
-          return test_done;
+          return test_done();
         });
         null;
       }
@@ -95,3 +95,5 @@
     compare: compare,
     countPerLap: count
   };
+
+  require("bench").runMain();

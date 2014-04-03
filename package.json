@@ -1,6 +1,6 @@
 {
   "name": "async-resolve",
-  "version": "0.2.7",
+  "version": "0.3.1",
   "description": "An asynchronous and configurable implementation of require.resolve(), like node-resolve or enhanced-resolve.",
   "main": "./lib/resolver",
   "repository": {
@@ -23,7 +23,8 @@
     "enhanced-resolve": "*",
     "localizer": "*",
     "resolve": "*",
-    "async": "*"
+    "async": "*",
+    "bench": "*"
   },
   "dependencies": {
     "lodash": "*",
