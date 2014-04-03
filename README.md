@@ -1,5 +1,5 @@
 [![Build Status](https://secure.travis-ci.org/Meettya/async-resolve.png)](http://travis-ci.org/Meettya/async-resolve)
-[![Dependency Status](https://gemnasium.com/Meettya/async-resolve.png)](https://gemnasium.com/Meettya/async-resolve)
+[![Dependency Status](https://gemnasium.com/Meettya/async-resolve.svg)](https://gemnasium.com/Meettya/async-resolve)
 
 
 
