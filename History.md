@@ -1,3 +1,8 @@
+## 0.3.1 / 2014-04-02 07:00 PM
+
+  - Update all modules
+  - Rebuild with CoffeeScript 1.7.1
+
 ## 0.2.5 / 2013-03-25 09:10 PM
 
   - Re-build with new dependencies versions
