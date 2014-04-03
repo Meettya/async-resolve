@@ -116,11 +116,10 @@ In short `async-resolve` 2.4 times as fast as `enhanced-resolve`.
 
 My benchmark [results](https://github.com/Meettya/async-resolve/blob/master/Benchmarking.md).
 
-Build you own in 3 steps:
+Build you own in 2 steps:
 
-1. do  `$ npm install node-bench -g`
-2. do  `$ npm install -d` at root module folder
-3. run `$ node-bench ./bench/async-resolve_vs_other.js` from root module folder
+1. do  `$ npm install` at root module folder
+3. run `$ coffee ./bench/async-resolve_vs_other.coffee` from root module folder
 
 ## License
 
