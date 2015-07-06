@@ -1,3 +1,10 @@
+## 0.3.3 / 2015-07-06 07:00 PM
+
+  - Update core modules and move list to separate file
+  - Update all modules
+  - Rebuild with CoffeeScript 1.9.3
+  - Add 0.12 to Travis test, remove 0.8
+
 ## 0.3.1 / 2014-04-02 07:00 PM
 
   - Update all modules
