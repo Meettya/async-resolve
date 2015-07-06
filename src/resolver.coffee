@@ -13,57 +13,14 @@ fs      = require 'fs'
 path    = require 'path'
 _       = require 'lodash'
 
-AsyncCache = require 'async-cache'
+AsyncCache      = require 'async-cache'
+CoreModulesList = require './core_list'
 
-class Resolver
 
-  # move it out to config file, may be - think about it
-  # taken from `ls -1 lib` from https://github.com/joyent/node at commit bda45a8be1e80bb79343db019e450c1ded2382eb
-  CORE_MODULES_LIST = [
-    '_debugger'
-    '_linklist'
-    '_stream_duplex'
-    '_stream_passthrough'
-    '_stream_readable'
-    '_stream_transform'
-    '_stream_writable'
-    'assert'
-    'buffer'
-    'child_process'
-    'cluster'
-    'console'
-    'constants'
-    'crypto'
-    'dgram'
-    'dns'
-    'domain'
-    'events'
-    'freelist'
-    'fs'
-    'http'
-    'https'
-    'module'
-    'net'
-    'os'
-    'path'
-    'punycode'
-    'querystring'
-    'readline'
-    'repl'
-    'stream'
-    'string_decoder'
-    'sys'
-    'timers'
-    'tls'
-    'tty'
-    'url'
-    'util'
-    'vm'
-    'zlib'
-  ]
+module.exports = class Resolver
 
   # speed up searching
-  CORE_MODULES = _.reduce CORE_MODULES_LIST, ( (memo, val) -> memo[val] = true; memo ), {}
+  CORE_MODULES = _.reduce CoreModulesList, ( (memo, val) -> memo[val] = true; memo ), {}
 
   # events names convention
   MODULE_FOUND      = 'module.found'
@@ -353,7 +310,3 @@ class Resolver
     _.filter values, (val) ->
       _.any patterns, (patt) -> 
         val is patt
-
-
-module.exports = Resolver
-
