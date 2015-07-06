@@ -488,7 +488,7 @@ describe 'Resolver:', ->
         mapper = (n, par_cb) -> async.map _.shuffle(dep_tree), out_iterator_fn, par_cb
 
         async.times 20, mapper, (err, results) ->
-          expect(err).to.be.undefined
+          expect(err).to.be.null
         
           for item in results
             (_.flatten item, true).should.to.have.length 6
