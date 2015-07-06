@@ -1,6 +1,6 @@
 {
   "name": "async-resolve",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "An asynchronous and configurable implementation of require.resolve(), like node-resolve or enhanced-resolve.",
   "main": "./lib/resolver",
   "repository": {
@@ -27,8 +27,8 @@
     "bench": "*"
   },
   "dependencies": {
-    "lodash": "*",
-    "async-cache": "*"
+    "lodash": "3.x",
+    "async-cache": "1.x"
   },
   "scripts": {
     "test": "cake test"
@@ -37,7 +37,7 @@
     "url": "https://github.com/Meettya/async-resolve/issues"
   },
   "engines": {
-    "node": ">=0.8.0"
+    "node": ">=0.10.0"
   },
   "license": "MIT"
 }
