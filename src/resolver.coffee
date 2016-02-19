@@ -163,15 +163,25 @@ module.exports = class Resolver
     # or search in any 'node_modules' dirs
     detector = (val, cb) =>
       test_path = path.resolve val, path_name
-      @_fs_.exists.get test_path, (res) -> cb res
+      @_fs_.exists.get test_path, (res) =>
+        # all ok, just return in
+        return cb yes if res
+        # result may be false in case of using 'module/foo' notation for file without extension
+        @_fs_.exists.get path.dirname(test_path), (maybe) -> cb no, maybe
 
     detect_series = (int_res_cb, try_path, other_paths...) =>
       unless try_path
         return int_res_cb MODULE_NOT_FOUND
 
-      detector try_path, (is_exist) =>
+      detector try_path, (is_exist, maybe) =>
         if is_exist
           @_processFileOrDirectory path_name, try_path, int_res_cb
+        else if maybe
+          @_processFileOrDirectory path_name, try_path, (event_name, in_data) ->
+            if event_name is MODULE_FOUND
+              int_res_cb event_name, in_data
+            else
+              detect_series int_res_cb, other_paths...
         else
           detect_series int_res_cb, other_paths...
 
@@ -308,5 +318,5 @@ module.exports = class Resolver
   ###
   _multiGrep : (values, patterns) ->
     _.filter values, (val) ->
-      _.any patterns, (patt) -> 
+      _.some patterns, (patt) -> 
         val is patt
