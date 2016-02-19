@@ -70,6 +70,12 @@ examples = [
     parent : path.join fixtureRoot, 'other_modules', 'devider', 'other_modules', 'substitutor'
     file_name : path.join fixtureRoot, 'other_modules/summator/lib/summator.coffee'
   },
+  {   #9
+    path_name : 'summator/lib/summator'
+    parent : path.join fixtureRoot, 'other_modules'
+    file_name : path.join fixtureRoot, 'other_modules/summator/lib/summator.coffee'
+  }
+
 ]
 
 #TODO! also need web_modules substitution
@@ -241,6 +247,17 @@ describe 'Resolver:', ->
       #console.log examples[8].path_name, examples[8].parent
       pf_obj.resolveAbsolutePath examples[8].path_name, examples[8].parent, res_fn
  
+     it 'should find file without extensions in module with relative path and parent - "module/foo" style', (done) ->
+      res_fn = (err, file_name) ->
+        expect(err).to.be.null
+        #console.log 'err ', err
+        #console.log 'file_name ', file_name
+        
+        file_name.should.to.be.eql examples[9].file_name
+        done()
+
+      #console.log examples[8].path_name, examples[8].parent
+      pf_obj.resolveAbsolutePath examples[9].path_name, examples[9].parent, res_fn
 
   describe 'isCoreModule()', ->
 
