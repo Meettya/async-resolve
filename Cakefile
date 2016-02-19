@@ -41,7 +41,7 @@ log = (message, color, explanation) ->
 task 'build', 'build module from source', build = (cb) ->
   files = fs.readdirSync 'src'
   files = ('src/' + file for file in files when file.match(/\.coffee$/))
-  run_coffee ['-c', '-o', 'lib/'].concat(files), cb
+  run_coffee ['-c', '-b', '-o', 'lib/'].concat(files), cb
   log ' -> build done', green
   
 task 'dev-test', 'build module and test it', ->
