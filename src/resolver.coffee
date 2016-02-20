@@ -52,10 +52,10 @@ module.exports = class Resolver
     @_dir_load_steps_ = ['package.json'].concat @_buildDirLoadSteps @_known_ext_
 
     @_fs_ = 
-      exists    : @_buildCachedFunction 'fs.exists'
-      readdir   : @_buildCachedFunction 'fs.readdir'
-      readFile  : @_buildCachedFunction 'fs.readFile'
-      stat      : @_buildCachedFunction 'fs.stat'
+      exists    : @_buildCachedFunction fs.exists
+      readdir   : @_buildCachedFunction fs.readdir
+      readFile  : @_buildCachedFunction fs.readFile
+      stat      : @_buildCachedFunction fs.stat
 
   ###
   Alias to resolveAbsolutePath()
@@ -130,19 +130,13 @@ module.exports = class Resolver
   ###
   This method buld cached function
   ###
-  _buildCachedFunction : (function_name) ->
-    # yap, magic here
-    max     = if function_name is 'fs.readFile' then 100 else 1000
-    maxAge  = 1000 * 5
-    load    = switch function_name
-      when 'fs.exists'    then (key, cb) -> fs.exists   key, cb
-      when 'fs.readdir'   then (key, cb) -> fs.readdir  key, cb
-      when 'fs.readFile'  then (key, cb) -> fs.readFile key, cb
-      when 'fs.stat'      then (key, cb) -> fs.stat     key, cb
-      else
-        throw Error "WTF!!?? unknow cached function name #{function_name}"
-    
-    new AsyncCache {max, maxAge, load}
+  _buildCachedFunction : (processor) ->
+    options = 
+      load    : processor
+      max     : 1000      # max values to remember
+      maxAge  : 1000 * 5  # max TTL for value
+
+    new AsyncCache options
           
   ###
   This internal method create directory resolution patterns in correct steps
