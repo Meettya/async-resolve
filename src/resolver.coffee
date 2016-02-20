@@ -11,7 +11,12 @@ Not drop-in, but mostly worked with some changes
 
 fs      = require 'fs'
 path    = require 'path'
-_       = require 'lodash'
+
+filter  = require 'lodash.filter'
+find    = require 'lodash.find'
+map     = require 'lodash.map'
+reduce  = require 'lodash.reduce'
+some    = require 'lodash.some'
 
 AsyncCache      = require 'async-cache'
 CoreModulesList = require './core_list'
@@ -20,15 +25,15 @@ CoreModulesList = require './core_list'
 module.exports = class Resolver
 
   # speed up searching
-  CORE_MODULES = _.reduce CoreModulesList, ( (memo, val) -> memo[val] = true; memo ), {}
+  CORE_MODULES = reduce CoreModulesList, ( (memo, val) -> memo[val] = true; memo ), {}
 
   # events names convention
+  ERROR             = 'error'
   MODULE_FOUND      = 'module.found'
   MODULE_NOT_FOUND  = 'module.not_found'
-  ERROR             = 'error'
 
   ###
-  May used with options, default are:
+  May be used with options, default are:
 
   options =
     log : off
@@ -38,19 +43,19 @@ module.exports = class Resolver
   ###
   constructor: (@_options_={}) ->
     # for debugging 
-    @_do_logging_ = if @_options_.log? and @_options_.log is on and console?.log? then yes else no
+    @_do_logging_ = @_options_.log? and @_options_.log is on and console?.log?
 
     @_node_modules_dirname_ = @_options_.modules ? 'node_modules'
 
     # TODO add ensure and test func. both
-    @_known_ext_ = @_options_.extensions ? ['.js', '.json', '.node']
+    @_known_ext_      = @_options_.extensions ? ['.js', '.json', '.node']
     @_dir_load_steps_ = ['package.json'].concat @_buildDirLoadSteps @_known_ext_
 
     @_fs_ = 
-      stat      : @_buildCachedFunction 'fs.stat'
-      readdir   : @_buildCachedFunction 'fs.readdir'
       exists    : @_buildCachedFunction 'fs.exists'
+      readdir   : @_buildCachedFunction 'fs.readdir'
       readFile  : @_buildCachedFunction 'fs.readFile'
+      stat      : @_buildCachedFunction 'fs.stat'
 
   ###
   Alias to resolveAbsolutePath()
@@ -80,17 +85,17 @@ module.exports = class Resolver
   This method will used to add extensions, keep based untouched
   ###
   addExtensions : (extensions...) ->
-    @_known_ext_ = @_known_ext_.concat extensions
+    @_known_ext_      = @_known_ext_.concat extensions
     @_dir_load_steps_ = @_dir_load_steps_.concat @_buildDirLoadSteps extensions
 
   ###
   This method get internal state, may be used in tests and debug
   ###
   getState : ->
-    log : @_do_logging_
-    extensions  : @_known_ext_
-    dir_load_steps : @_dir_load_steps_
-    modules :  @_node_modules_dirname_
+    dir_load_steps  : @_dir_load_steps_
+    extensions      : @_known_ext_
+    log             : @_do_logging_
+    modules         : @_node_modules_dirname_
 
   ###
   This method chech is filename is core module
@@ -127,13 +132,13 @@ module.exports = class Resolver
   ###
   _buildCachedFunction : (function_name) ->
     # yap, magic here
-    max = if function_name is 'fs.readFile' then 100 else 1000
-    maxAge = 1000 * 5
-    load = switch function_name
-      when 'fs.stat'      then (key, cb) -> fs.stat     key, cb
-      when 'fs.readdir'   then (key, cb) -> fs.readdir  key, cb
+    max     = if function_name is 'fs.readFile' then 100 else 1000
+    maxAge  = 1000 * 5
+    load    = switch function_name
       when 'fs.exists'    then (key, cb) -> fs.exists   key, cb
+      when 'fs.readdir'   then (key, cb) -> fs.readdir  key, cb
       when 'fs.readFile'  then (key, cb) -> fs.readFile key, cb
+      when 'fs.stat'      then (key, cb) -> fs.stat     key, cb
       else
         throw Error "WTF!!?? unknow cached function name #{function_name}"
     
@@ -143,7 +148,7 @@ module.exports = class Resolver
   This internal method create directory resolution patterns in correct steps
   ###
   _buildDirLoadSteps : (extensions) ->
-    _.map extensions, (val) -> "index#{val}"
+    map extensions, (val) -> "index#{val}"
 
   ###
   Short-cut debugging
@@ -205,14 +210,14 @@ module.exports = class Resolver
   ###
   _resolveFileByExtentionOrder : (files) ->
     for ext in @_known_ext_
-      return res if ( res = _.find files, (val) ->
+      return res if ( res = find files, (val) ->
         ext is path.extname val )
 
   ###
   This method process file or directory
   ###
   _processFileOrDirectory : (path_name, basedir, res_cb) ->
-    path_name = path.resolve basedir, path_name
+    path_name   = path.resolve basedir, path_name
     
     path_prefix = path.dirname path_name
     path_suffix = path.basename path_name
@@ -306,7 +311,7 @@ module.exports = class Resolver
   # TODO! cache it and, yes, cache invalidation logic too :(
   _processPath : (path_prefix, path_suffix, res_cb, cb) ->
     @_debug '_processPath', path_prefix, path_suffix
-    patterns = _.map @_known_ext_, (ext) -> "#{path_suffix}#{ext}"
+    patterns = map @_known_ext_, (ext) -> "#{path_suffix}#{ext}"
 
     @_fs_.readdir.get path_prefix, (err, dir) =>
       return res_cb ERROR, err if err
@@ -317,6 +322,6 @@ module.exports = class Resolver
   This method was multi-grep - filter all values, matched by any pattern
   ###
   _multiGrep : (values, patterns) ->
-    _.filter values, (val) ->
-      _.some patterns, (patt) -> 
+    filter values, (val) ->
+      some patterns, (patt) -> 
         val is patt
