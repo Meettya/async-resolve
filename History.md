@@ -1,8 +1,9 @@
 ## 0.3.5 / 2016-02-19 07:00 PM
 
   - Fix bug with 'module/foo'-style require (file in module without extension)
+  - Replace monolith 'lodash' to modularized used only separate parts
   - Update all modules
-  - Add 5.6 and 4.3 to Travis test
+  - Add node v5.6 & v4.3 to Travis test
 
 ## 0.3.3 / 2015-07-06 07:00 PM
 
