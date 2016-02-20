@@ -17,18 +17,23 @@
   ],
   "author": "Dmitrii Karpich <meettya@gmail.com>",
   "devDependencies": {
-    "mocha": "*",
+    "async": "*",
+    "bench": "*",
     "chai": "*",
     "coffee-script": "*",
     "enhanced-resolve": "*",
     "localizer": "*",
-    "resolve": "*",
-    "async": "*",
-    "bench": "*"
+    "lodash": "*",
+    "mocha": "*",
+    "resolve": "*"
   },
   "dependencies": {
-    "lodash": "4.x",
-    "async-cache": "1.x"
+    "async-cache": "1.x",
+    "lodash.filter":"4.x",
+    "lodash.find":"4.x",
+    "lodash.map":"4.x",
+    "lodash.reduce":"4.x",
+    "lodash.some":"4.x"
   },
   "scripts": {
     "test": "cake test"
